@@ -5,7 +5,7 @@ import { faker } from '@faker-js/faker';
 import { Exclude, Expose } from 'class-transformer';
 
 import { Base, MaxGroup } from '@shared';
-import { ProductCategory, OrderProduct, ProductStore } from '@model';
+import { ProductCategory, OrderProduct, ProductStore,Cart } from '@model';
 
 @Entity({ schema: 'product' })
 export class Product extends Base {
@@ -104,4 +104,8 @@ export class Product extends Base {
   @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.product)
   @IsOptional()
   readonly orderProducts?: OrderProduct[];
+
+  @OneToMany(() => Cart, (cart) => cart.product)
+  readonly cart?: Cart[];
+
 }

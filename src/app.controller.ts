@@ -1,9 +1,10 @@
-import { Get, Controller, Render, ValidationPipe, Query, Param, Post, Body, Session } from '@nestjs/common';
-import { AuthService, ProductCategoryService, ProductService } from '@service';
+import { Get, Controller, Render, ValidationPipe, Query, Param, Post, Body, Session, Res } from '@nestjs/common';
+import { AuthService, CartService, ProductCategoryService, ProductService } from '@service';
 import { LoginAuthRequestDto, ProductCategoryResponseDto } from '@dto';
 import { I18nContext } from 'nestjs-i18n';
 import { PaginationQueryDto } from '@shared';
-
+import { FastifyReply } from 'fastify';
+import { AddToCartDto } from './module/product/dto/cart.dto';
 
 @Controller()
 export class AppController {
@@ -11,38 +12,50 @@ export class AppController {
     private readonly categoryService: ProductCategoryService,
     private readonly productService: ProductService,
     private readonly authService: AuthService,
+    private readonly cartService: CartService,
   ) {}
 
-  @Get('')
+  @Get('/login')
   @Render('pages/login/index')
   login(): void{}
  
-  @Post('/login')
-  async login1(@Body() body: LoginAuthRequestDto,@Session() session): Promise<any>{
-    const user = await this.authService.login(body);
-    // console.log(user);
-    session.user = user;
-     ;
+@Post('/login')
+async login1(
+  @Body() body: LoginAuthRequestDto,
+  @Session() session: any,
+  @Res({ passthrough: true }) res: FastifyReply,
+): Promise<any> {
+  console.log(body);
+  const user = await this.authService.login(body);
+  if (user) {
+    session.userId = user.id;
+   return res.redirect(302,'/');
+  } else {
+    return res.redirect(302,'/login');
   }
+}
 
-  @Get('/home')
+  @Get('')
   @Render('pages/home/index')
   async root(
     language: string = 'en',
     urlLang = '/vn',
     @Query(new ValidationPipe({ transform: true })) paginationQuery: PaginationQueryDto,
-    @Session() session
+    @Session() session,
+    @Res({ passthrough: true }) res: FastifyReply,
   ): Promise<any> {
+    if(!session.get('userId')){
+      return res.redirect(302,'/login');
+    }
     const { data } = await this.common(language);
-    const user= session.user;
-    console.log(user);
+    const userId = session.userId;
+    console.log(userId);
     
-
     let [categories] = await this.categoryService.findAll(paginationQuery);
     const [products] = await this.productService.findAll(paginationQuery);
     const featureCate = categories.slice(0, 3);
     categories = categories.map((item) => Object.assign(item, { countProds: item.products?.length }));
-
+    console.log(products);
     return {
       urlLang,
       ...data,
@@ -76,9 +89,10 @@ export class AppController {
     language: string = 'vn',
     urlLang = '/en',
     @Query(new ValidationPipe({ transform: true })) paginationQuery: PaginationQueryDto,
-    @Session() session: Record<string, any>
+    @Session() session: Record<string, any>,
+    @Res({ passthrough: true }) res: FastifyReply,
   ): Promise<any> {
-    return await this.root(language, urlLang, paginationQuery,session);
+    return await this.root(language, urlLang, paginationQuery,session,res);
   }
 
   async common(language: string): Promise<any> {
@@ -180,6 +194,14 @@ export class AppController {
       },
     };
   }
+
+  @Post("/addToCart")
+ async addToCart(@Body() productId: AddToCartDto ,@Session() session: Record<string, any>) {
+      const userId = session.userId;
+      const idProduct=productId.productId;
+   return this.cartService.saveCart(userId,idProduct)
+ }
+
   @Get('/administrator')
   @Render('administrator')
   administrator(): void {}

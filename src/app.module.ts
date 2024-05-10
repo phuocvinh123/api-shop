@@ -16,14 +16,10 @@ import {
   ProductModule,
 } from '@module';
 import { NamingStrategy } from '@shared';
-import { SessionModule } from 'nestjs-session';
 
 @Module({
   controllers: [AppController],
   imports: [
-    SessionModule.forRoot({
-      session: { secret: 'keyboard cat' }
-    }),
     WinstonModule.forRoot(loggerOptions),
     // NotificationModule,
     SchedulerModule,

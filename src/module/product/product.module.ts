@@ -9,6 +9,7 @@ import {
   OrderAddressService,
   OrderProductService,
   UserService,
+  CartService,
 } from '@service';
 import {
   ProductCategoryRepository,
@@ -18,6 +19,7 @@ import {
   UserRepository,
   OrderAddressRepository,
   OrderProductRepository,
+  CartRepository,
 } from '@repository';
 import { UserModule } from '../user/user.module';
 
@@ -39,6 +41,8 @@ import { UserModule } from '../user/user.module';
     OrderProductService,
     UserService,
     UserRepository,
+    CartService,
+    CartRepository,
   ],
   exports: [
     ProductRepository,
@@ -53,6 +57,8 @@ import { UserModule } from '../user/user.module';
     OrderAddressService,
     OrderProductRepository,
     OrderProductService,
+    CartService,
+    CartRepository,
   ],
 })
 export class ProductModule {}

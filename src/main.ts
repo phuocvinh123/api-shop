@@ -6,10 +6,8 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import secureSession from '@fastify/secure-session';
 import { WINSTON_MODULE_NEST_PROVIDER, WinstonModule } from 'nest-winston';
 import { join } from 'path';
-
 import hbs from 'hbs';
 import hbsUtils from 'hbs-utils';
-
 import { appConfig, loggerOptions, setupSwagger } from '@config';
 import { HttpExceptionFilter } from '@shared';
 import { AppModule } from './app.module';
@@ -21,7 +19,7 @@ async function bootstrap(): Promise<void> {
     cors: true,
   });
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
-  
+
   await app.register(helmet, { crossOriginResourcePolicy: false, contentSecurityPolicy: false });
   // Fastify file upload
   const options = {

@@ -75,6 +75,7 @@
     "@nestjs/schematics": "^10.1.1",
     "@nestjs/testing": "^10.3.3",
     "@types/config": "^3.3.3",
+    "@types/express-session": "^1.18.0",
     "@types/helmet": "0.0.48",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.19",

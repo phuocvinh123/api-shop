@@ -1,4 +1,4 @@
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 import * as argon2 from 'argon2';
 
-import { UserRole, Code, Address, ProductStore, Order } from '@model';
+import { UserRole, Code, Address, ProductStore, Order, Cart } from '@model';
 import { Example, OnlyUpdateGroup, Base, setImage } from '@shared';
 
 @Entity({ schema: 'user' })
@@ -138,4 +138,9 @@ export class User extends Base {
 
   @OneToMany(() => Order, (order) => order.user)
   order?: Order;
+
+  @OneToOne(() => Cart, (cart) => cart.user)
+  @Type(() => Cart)
+  @JoinColumn()
+  readonly cart?: Cart;
 }
